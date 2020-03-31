@@ -64,8 +64,8 @@ def affine_backward(dout, cache):
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
     # Right now, we are defrintiating only this formula: w*x + b
-#     x = x.reshape(x.shape[0], np.prod(x.shape[1:]))
     dx = np.dot(dout, w.T).reshape(x.shape) # (N, M) * (M, D)
+    x = x.reshape(x.shape[0], np.prod(x.shape[1:]))
     dw = np.dot(x.T, dout) # (D, N) * (N, M)
     db = np.sum(dout, axis=0)
     pass
