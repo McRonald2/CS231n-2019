@@ -70,7 +70,7 @@ class ThreeLayerConvNet(object):
         HP, WP = 1 + (H - 2) / 2, 1 + (W - 2) / 2  # max pooling
         self.params['W1'] = weight_scale * np.random.randn(num_filters, C, filter_size, filter_size)
         self.params['b1'] = np.zeros(num_filters)
-        self.params['W2'] = weight_scale * np.random.randn(num_filters * HP * WP, hidden_dim)
+        self.params['W2'] = weight_scale * np.random.randn(num_filters * int(HP) * int(WP), hidden_dim)
         self.params['b2'] = np.zeros(hidden_dim)
         self.params['W3'] = weight_scale * np.random.randn(hidden_dim, num_classes)
         self.params['b3'] = np.zeros(num_classes)
