@@ -96,8 +96,10 @@ def conv_relu_pool_backward(dout, cache):
     """
     Backward pass for the conv-relu-pool convenience layer
     """
+    print('dout_shape 1: ', dout)
     conv_cache, relu_cache, pool_cache = cache
     ds = max_pool_backward_fast(dout, pool_cache)
+    print('dout_shape 2: ', dout)
     da = relu_backward(ds, relu_cache)
     dx, dw, db = conv_backward_fast(da, conv_cache)
     return dx, dw, db
