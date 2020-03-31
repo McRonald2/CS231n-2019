@@ -28,8 +28,8 @@ def affine_forward(x, w, b):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    x = np.reshape(x, (x.shape[0], np.prod(x.shape[1:])))
-    out = np.dot(x, w) + b
+#     x = np.reshape(x, (x.shape[0], np.prod(x.shape[1:])))
+    out = np.dot(x.reshape(x.shape[0], -1), w) + b
     pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
