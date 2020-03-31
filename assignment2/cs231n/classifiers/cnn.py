@@ -104,17 +104,12 @@ class ThreeLayerConvNet(object):
         # cs231n/layer_utils.py in your implementation (already imported).         #
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        # out_conv, cache_conv = conv_relu_pool_forward(X, W1, b1, conv_param, pool_param)
-        # out_relu, cache_relu = affine_relu_forward(out_conv, W2, b2)
-        # out, cache_affine = affine_forward(out_relu, W3, b3)
-        #
-        # scores = out
-
-        out1, cache1 = conv_relu_pool_forward(X, self.params['W1'], self.params['b1'], conv_param, pool_param)
-        out2, cache2 = affine_relu_forward(out1, self.params['W2'], self.params['b2'])
-        out3, cache3 = affine_forward(out2, self.params['W3'], self.params['b3'])
-        scores = out3
-
+        out_conv, cache_conv = conv_relu_pool_forward(X, W1, b1, conv_param, pool_param)
+        out_relu, cache_relu = affine_relu_forward(out_conv, W2, b2)
+        out, cache_affine = affine_forward(out_relu, W3, b3)
+        
+        scores = out
+        
         pass
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -137,26 +132,17 @@ class ThreeLayerConvNet(object):
         # of 0.5 to simplify the expression for the gradient.                      #
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        # loss, dout_loss = softmax_loss(scores, y)
-        # loss += 0.5 * self.reg * (np.sum(W1 * W1) + np.sum(W2 * W2) + np.sum(W3 * W3))
-        #
-        # dout_affine, grads['W3'], grads['b3'] = affine_backward(dout_loss, cache_affine)
-        # dout_relu, grads['W2'], grads['b2'] = affine_relu_backward(dout_affine, cache_relu)
-        # _, grads['W1'], grads['b1'] = conv_relu_pool_backward(dout_relu, cache_conv)
-        #
-        # grads['W1'] += self.reg * W1
-        # grads['W2'] += self.reg * W2
-        # grads['W3'] += self.reg * W3
-
-        loss, dout = softmax_loss(out3, y)
-        loss += self.reg * np.sum([np.sum(self.params['W%d' % i] ** 2) for i in [1, 2, 3]])
-        dout, grads['W3'], grads['b3'] = affine_backward(dout, cache3)
-        grads['W3'] += 2 * self.reg * self.params['W3']
-        dout, grads['W2'], grads['b2'] = affine_relu_backward(dout, cache2)
-        grads['W2'] += 2 * self.reg * self.params['W2']
-        _, grads['W1'], grads['b1'] = conv_relu_pool_backward(dout, cache1)
-        grads['W1'] += 2 * self.reg * self.params['W1']
-
+        loss, dout_loss = softmax_loss(scores, y)
+        loss += 0.5 * self.reg * (np.sum(W1 * W1) + np.sum(W2 * W2) + np.sum(W3 * W3))
+        
+        dout_affine, grads['W3'], grads['b3'] = affine_backward(dout_loss, cache_affine)
+        dout_relu, grads['W2'], grads['b2'] = affine_relu_backward(dout_affine, cache_relu)
+        print('dout_relu shape:', dout_relu.shape)
+        _, grads['W1'], grads['b1'] = conv_relu_pool_backward(dout_relu, cache_conv)
+        
+        grads['W1'] += self.reg * W1
+        grads['W2'] += self.reg * W2
+        grads['W3'] += self.reg * W3
         pass
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
