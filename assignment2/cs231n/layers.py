@@ -844,7 +844,20 @@ def spatial_groupnorm_forward(x, gamma, beta, G, gn_param):
     # and layer normalization!                                                # 
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    N, C, H, W = x.shape
+    x = x.reshape(N * G, C // G * H * W)
 
+    # Just like layer normalization.`
+    mu = np.mean(x, axis=1).reshape((x.shape[0], 1))
+    var = np.var(x, axis=1).reshape((x.shape[0], 1))
+    std = np.std(x, axis=1).reshape((x.shape[0], 1))
+    x_hat = (x - mu) / np.sqrt(var + eps)
+    x_hat = x_hat.reshape(N, C, H, W)
+    x_out = gamma * x_hat + beta
+    out = x_out
+
+    cache = {'x': x, 'x_hat': x_hat, 'x_out': x_out, 'mu': mu, 'std': std, 'var': var, 'gamma': gamma, 'beta': beta,
+             'eps': eps, 'G': G}
     pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -874,7 +887,18 @@ def spatial_groupnorm_backward(dout, cache):
     # This will be extremely similar to the layer norm implementation.        #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    N, C, H, W = dout.shape
+    G = cache['G']
+    m, d = (N * G, C // G * H * W)
 
+    dx_hat = dout * cache['gamma'] # result of shape: (N, C, H, W)
+    dgamma = np.sum(dout * cache['x_hat'], axis=(0,2,3), keepdims=True) # result of shape: (1, C, 1, 1)
+    dbeta = np.sum(dout, axis=(0,2,3), keepdims=True) # result of shape: (1, C, 1, 1)
+    dx_hat = dx_hat.reshape(m, d)
+    dvar = np.sum(dx_hat * (cache['x'] - cache['mu']), axis=1) * ((-.5) * (cache['var'] + cache['eps']) ** (-1.5)).reshape(-1)
+    dmu = (np.sum(dx_hat, axis=1) * (-1) / (np.sqrt(cache['var'] + cache['eps'])).reshape(-1)) + dvar * (-2 / d) * np.sum(cache['x'] - cache['mu'], axis=1)
+    dx = (dx_hat / np.sqrt(cache['var'] + cache['eps'])) + (dvar.reshape(cache['var'].shape) * (2 / d) * (cache['x'] - cache['mu'])) + (dmu / d).reshape(cache['mu'].shape)
+    dx = dx.reshape(N, C, H, W)
     pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
