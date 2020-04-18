@@ -28,7 +28,6 @@ def affine_forward(x, w, b):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-#     x = np.reshape(x, (x.shape[0], np.prod(x.shape[1:])))
     out = np.dot(x.reshape(x.shape[0], -1), w) + b
     pass
 
@@ -64,9 +63,9 @@ def affine_backward(dout, cache):
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
     # Right now, we are defrintiating only this formula: w*x + b
-    dx = np.dot(dout, w.T).reshape(x.shape) # (N, M) * (M, D)
+    dx = np.dot(dout, w.T).reshape(x.shape)  # (N, M) * (M, D)
     x = x.reshape(x.shape[0], np.prod(x.shape[1:]))
-    dw = np.dot(x.T, dout) # (D, N) * (N, M)
+    dw = np.dot(x.T, dout)  # (D, N) * (N, M)
     db = np.sum(dout, axis=0)
     pass
 
@@ -753,6 +752,10 @@ def spatial_batchnorm_forward(x, gamma, beta, bn_param):
     Returns a tuple of:
     - out: Output data, of shape (N, C, H, W)
     - cache: Values needed for the backward pass
+
+    Returns a tuple of:
+    - out: of shape (N, D)
+    - cache: A tuple of values needed in the backward pass
     """
     out, cache = None, None
 
@@ -765,9 +768,9 @@ def spatial_batchnorm_forward(x, gamma, beta, bn_param):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     N, C, H, W = x.shape
-    x = x.transpose(0,2,3,1).reshape(N*H*W, C)
+    x = x.transpose(0, 2, 3, 1).reshape(N * H * W, C)
     out, cache = batchnorm_forward(x, gamma, beta, bn_param)
-    out = out.reshape(N, H, W, C).transpose(0,3,1,2)
+    out = out.reshape(N, H, W, C).transpose(0, 3, 1, 2)
     pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -801,7 +804,7 @@ def spatial_batchnorm_backward(dout, cache):
     # Your implementation should be very short; ours is less than five lines. #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-    N, C, H, W = dout.shape
+    N, C, H, W = x.shape
     dout = dout.transpose(0, 2, 3, 1).reshape(N * H * W, C)
     dx, dgamma, dbeta = batchnorm_backward(dout, cache)
     dx = dx.reshape(N, H, W, C).transpose(0, 3, 1, 2)
